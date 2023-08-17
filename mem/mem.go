@@ -67,7 +67,7 @@ func stopJanitor(c *cache) {
 func Init() Cache {
 	c := make(Cache, cacheGroupCount)
 	for i := 0; i < cacheGroupCount; i++ {
-		c[i] = &cache{items: make(map[string]item)}
+		c[i] = &cache{items: make(map[string]item, 256)}
 
 		runJanitor(c[i], time.Second)
 		runtime.SetFinalizer(c[i], stopJanitor)
