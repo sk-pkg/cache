@@ -177,12 +177,13 @@ func (c Cache) Forget(key string) (bool, error) {
 
 func (c Cache) Increment(key string, n int) (int, error) {
 	group := c.getGroup(key)
-	group.RLock()
+
+	defer group.Unlock()
+	group.Lock()
 
 	v, ok := group.items[key]
 	if !ok {
 		group.items[key] = item{value: n}
-		group.RUnlock()
 		return n, nil
 	}
 
@@ -194,18 +195,18 @@ func (c Cache) Increment(key string, n int) (int, error) {
 	nv += n
 	v.value = nv
 	group.items[key] = v
-	group.RUnlock()
 
 	return nv, nil
 }
 
 func (c Cache) Decrement(key string, n int) (int, error) {
 	group := c.getGroup(key)
-	group.RLock()
+
+	defer group.Unlock()
+	group.Lock()
 
 	v, ok := group.items[key]
 	if !ok {
-		group.RUnlock()
 		return n, errors.New("Undefined key: " + key)
 	}
 
@@ -217,7 +218,6 @@ func (c Cache) Decrement(key string, n int) (int, error) {
 	nv -= n
 	v.value = nv
 	group.items[key] = v
-	group.RUnlock()
 
 	return nv, nil
 }
