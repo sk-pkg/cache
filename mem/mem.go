@@ -224,7 +224,11 @@ func (c Cache) Decrement(key string, n int) (int, error) {
 
 func (c Cache) Flush() error {
 	for _, group := range c {
+		group.Lock()
+
 		group.items = map[string]item{}
+
+		group.Unlock()
 	}
 
 	return nil
