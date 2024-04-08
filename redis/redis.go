@@ -66,11 +66,11 @@ func Init(opts ...Option) (*Cache, error) {
 	return rdsCache, nil
 }
 
-func (c Cache) Put(key string, value interface{}, seconds int) error {
+func (c Cache) Put(key string, value any, seconds int) error {
 	return c.redis.Set(c.prefix+key, value, seconds)
 }
 
-func (c Cache) Add(key string, value interface{}, seconds int) error {
+func (c Cache) Add(key string, value any, seconds int) error {
 	if !c.Has(key) {
 		return c.redis.Set(c.prefix+key, value, seconds)
 	}
@@ -78,13 +78,13 @@ func (c Cache) Add(key string, value interface{}, seconds int) error {
 	return nil
 }
 
-func (c Cache) Get(key string) (interface{}, error) {
+func (c Cache) Get(key string) (any, error) {
 	bytes, err := c.redis.Get(c.prefix + key)
 	if err != nil {
 		return nil, err
 	}
 
-	var value interface{}
+	var value any
 	err = json.Unmarshal(bytes, &value)
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (c Cache) Get(key string) (interface{}, error) {
 	return value, nil
 }
 
-func (c Cache) Pull(key string) (interface{}, error) {
+func (c Cache) Pull(key string) (any, error) {
 	value, err := c.Get(key)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (c Cache) Has(key string) bool {
 	return exists
 }
 
-func (c Cache) Forever(key string, value interface{}) error {
+func (c Cache) Forever(key string, value any) error {
 	return c.redis.Set(c.prefix+key, value, 0)
 }
 

@@ -14,25 +14,25 @@ const (
 
 type Manager interface {
 	// Put 缓存中存储数据
-	Put(key string, value interface{}, seconds int) error
+	Put(key string, value any, seconds int) error
 
 	// Add 方法将只存储缓存中不存在的数据。
-	Add(key string, value interface{}, seconds int) error
+	Add(key string, value any, seconds int) error
 
 	// Get 方法用于从缓存中获取数据。
 	// 如果该数据在缓存中不存在，那么该方法将返回 nil, nil
-	Get(key string) (interface{}, error)
+	Get(key string) (any, error)
 
 	// Pull 方法用于从缓存中获取到数据之后再删除它。
 	// 如果该数据在缓存中不存在，那么该方法将返回 nil, nil
-	Pull(key string) (interface{}, error)
+	Pull(key string) (any, error)
 
 	// Has 方法可以用于判断缓存项是否存在。如果值为 nil，则该方法将会返回 false
 	Has(key string) bool
 
 	// Forever 方法可用于持久化将数据存储到缓存中。
 	// 因为这些数据不会过期，所以必须通过 Forget 方法从缓存中手动删除它们
-	Forever(key string, value interface{}) error
+	Forever(key string, value any) error
 
 	// Forget 方法从缓存中删除这些数据
 	Forget(key string) (bool, error)

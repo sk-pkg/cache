@@ -18,7 +18,7 @@ type cache struct {
 }
 
 type item struct {
-	value      interface{}
+	value      any
 	Expiration int64
 }
 
@@ -80,7 +80,8 @@ func (c Cache) getGroup(key string) *cache {
 	return c[uint(fnv32(key))%uint(cacheGroupCount)]
 }
 
-func (c Cache) Put(key string, value interface{}, seconds int) error {
+// Put 在Cache中存储键值对，如果key已经存在将覆盖旧值
+func (c Cache) Put(key string, value any, seconds int) error {
 	var e int64
 	if seconds > 0 {
 		e = time.Now().Add(time.Duration(seconds) * time.Second).UnixNano()
@@ -93,14 +94,13 @@ func (c Cache) Put(key string, value interface{}, seconds int) error {
 
 	group := c.getGroup(key)
 	group.Lock()
-
 	group.items[key] = data
 	group.Unlock()
 
 	return nil
 }
 
-func (c Cache) Add(key string, value interface{}, seconds int) error {
+func (c Cache) Add(key string, value any, seconds int) error {
 	group := c.getGroup(key)
 	group.Lock()
 
@@ -121,7 +121,7 @@ func (c Cache) Add(key string, value interface{}, seconds int) error {
 	return nil
 }
 
-func (c Cache) Get(key string) (interface{}, error) {
+func (c Cache) Get(key string) (any, error) {
 	group := c.getGroup(key)
 	group.RLock()
 
@@ -131,7 +131,7 @@ func (c Cache) Get(key string) (interface{}, error) {
 	return i.value, nil
 }
 
-func (c Cache) Pull(key string) (interface{}, error) {
+func (c Cache) Pull(key string) (any, error) {
 	value, err := c.Get(key)
 	if err != nil {
 		return nil, err
@@ -155,7 +155,7 @@ func (c Cache) Has(key string) bool {
 	return ok
 }
 
-func (c Cache) Forever(key string, value interface{}) error {
+func (c Cache) Forever(key string, value any) error {
 	group := c.getGroup(key)
 	group.Lock()
 	group.items[key] = item{value: value}
@@ -234,6 +234,7 @@ func (c Cache) Flush() error {
 	return nil
 }
 
+// fnv32 是一个用于散列字符串的算法，基于FNV算法。
 func fnv32(key string) uint32 {
 	hash := uint32(2166136261)
 	const prime32 = uint32(16777619)
