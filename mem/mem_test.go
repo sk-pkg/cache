@@ -148,7 +148,35 @@ func BenchmarkGet(b *testing.B) {
 		c.Add(strconv.Itoa(i), i, 10)
 	}
 
+	b.ResetTimer()
+
 	for i := 0; i < b.N; i++ {
 		c.Get(strconv.Itoa(i))
+	}
+}
+
+func BenchmarkHas(b *testing.B) {
+	c := Init()
+	for i := 0; i < b.N; i++ {
+		c.Add(strconv.Itoa(i), i, 10)
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		c.Has(strconv.Itoa(i))
+	}
+}
+
+func BenchmarkPut(b *testing.B) {
+	c := Init()
+	for i := 0; i < b.N; i++ {
+		c.Add(strconv.Itoa(i), i, 10)
+	}
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		c.Put(strconv.Itoa(i), i+1, 5)
 	}
 }
