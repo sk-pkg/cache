@@ -23,9 +23,11 @@ type item struct {
 }
 
 func Init() Cache {
+	const itemCount = 256
+
 	c := make(Cache, cacheGroupCount)
 	for i := 0; i < cacheGroupCount; i++ {
-		c[i] = &cache{items: make(map[string]item, 256)}
+		c[i] = &cache{items: make(map[string]item, itemCount)}
 
 		runJanitor(c[i], time.Second)
 		runtime.SetFinalizer(c[i], stopJanitor)
@@ -184,7 +186,7 @@ func (c Cache) Flush() error {
 	for _, group := range c {
 		group.Lock()
 
-		group.items = map[string]item{}
+		clear(group.items)
 
 		group.Unlock()
 	}
