@@ -8,9 +8,9 @@ import (
 
 func TestRedisCache(t *testing.T) {
 	cfg := Config{
-		Address:  "10.10.10.3:6379",
+		Address:  "10.10.10.10:6379",
 		Prefix:   "test",
-		Password: "QCWuNFS3787on2",
+		Password: "password",
 	}
 	c, _ := Init(WithRedisConfig(cfg))
 
